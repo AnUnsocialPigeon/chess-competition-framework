@@ -15,5 +15,5 @@ print(f"I'm gonna do {random_move}")
 
 # Apply the random move
 board.push(random_move)
-print(board.fen())
+print(board.fen())  # The last print statement of the bot must be purely the FEN string of the resulting board.
 

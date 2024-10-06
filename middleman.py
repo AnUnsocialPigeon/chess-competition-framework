@@ -1,7 +1,9 @@
 import subprocess
 import sys
 import os
+from datetime import datetime
 import chess
+import chess.pgn
 
 # Get bot locations
 if len(sys.argv) != 3:
@@ -12,6 +14,8 @@ bot1_location = sys.argv[1]
 bot2_location = sys.argv[2]
 
 failureString = "Lost"
+chess_state = chess.Board()
+move_log = []
 
 if not (os.path.isfile(bot1_location) and os.path.isfile(bot2_location)):
     print("Invalid bot location.")
@@ -20,7 +24,6 @@ if not (os.path.isfile(bot1_location) and os.path.isfile(bot2_location)):
 
 def playGame():
     """Play a game between 2 bots. Returns 1 for bot 1 win, 2 for bot 2 win, or 0 for draw"""
-    chess_state = chess.Board()
 
     while True:
         winner = playTurn(chess_state, bot1_location)
@@ -31,7 +34,6 @@ def playGame():
         if winner != 0:
             return winner % 3
 
-        
 
 def playTurn(chess_state: chess.Board, bot_location: str):
     """Play a single turn of chess. Returns 0 for continue, 1 for white won, 2 for black won, 3 for draw"""
@@ -46,7 +48,11 @@ def playTurn(chess_state: chess.Board, bot_location: str):
         print("Invalid move.")
         return 2
     
+    # Play the move - must be logged
+    move_log.append(move.uci())
     chess_state.push(move)
+
+
     return gameState(chess_state)
 
 
@@ -126,8 +132,36 @@ def checkMoveValidity(initial_fen: str, next_fen: str):
     return ""
 
 
+def saveGameToPGN(round: int):
+    """Save the game log to a PGN file"""
+    game = chess.pgn.Game()
+
+
+    # Set relevant PGN headers
+    game.headers["Event"] = "Warwick AI chess competition"
+    game.headers["Site"] = "Online"
+    game.headers["Date"] = datetime.now().strftime("%Y.%m.%d")
+    game.headers["Round"] = str(round)
+    game.headers["White"] = bot1_location   
+    game.headers["Black"] = bot2_location
+
+    node = game
+
+    for move in move_log:
+        uci_move = chess.Move.from_uci(move)
+        node = node.add_main_variation(uci_move)
+    
+    file_location = f"{bot1_location} vs {bot2_location}.pgn"
+
+    # Export the game to a PGN file
+    with open(file_location, "w") as pgn_file:
+        print(game, file=pgn_file)
+
+    print(f"Game saved to {file_location}")
 
 
 if __name__ == "__main__":
     winner = playGame()
     print(f"Outcome: {winner}")
+    saveGameToPGN(1)
+
