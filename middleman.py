@@ -92,7 +92,7 @@ def gameState(chess_state: chess.Board):
 
 def runBot(game_state: str, bot_file: str):
     """Runs a single round between 2 bots"""
-    print(f"Running {bot_file} with {game_state}")
+    print(f"Running {bot_file.split('/')[-1]} with {game_state}")
     
     bot = subprocess.Popen(
         ["python3", bot_file],
@@ -153,7 +153,7 @@ def saveGame(round: int):
         uci_move = chess.Move.from_uci(move)
         node = node.add_main_variation(uci_move)
     
-    file_location = f"{bot1_location.split('/')[-1].split('\\')[-1]} vs {bot2_location.split('/')[-1].split('\\')[-1]} round {round}"
+    file_location = f"logs/{bot1_location.split('/')[-1].split('\\')[-1]} vs {bot2_location.split('/')[-1].split('\\')[-1]} round {round}"
 
     # Export the game to a PGN file
     with open(f"{file_location}.pgn", "w") as pgn_file:
@@ -164,7 +164,7 @@ def saveGame(round: int):
         for fen in fen_log:
             print(fen, file=log_file)
 
-    print(f"Game saved to {file_location}")
+    print(f"Game saved to \"{file_location}\"")
 
 
 if __name__ == "__main__":
