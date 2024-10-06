@@ -35,7 +35,7 @@ def playGame():
 
 def playTurn(chess_state: chess.Board, bot_location: str):
     """Play a single turn of chess. Returns 0 for continue, 1 for white won, 2 for black won, 3 for draw"""
-    outcome = runBot(chess_state.fen(), bot_location).strip()
+    outcome = runBot(chess_state.fen(), bot_location).strip().split('\n')[-1]   # Take just the last output
 
     if outcome == failureString:
         print("Failed.")
@@ -78,7 +78,7 @@ def gameState(chess_state: chess.Board):
         print("Draw")
         return 3
     else:
-        print("Game continues")
+        #print("Game continues")
         return 0
 
 
