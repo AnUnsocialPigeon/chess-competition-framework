@@ -153,7 +153,7 @@ def saveGame(round: int):
         uci_move = chess.Move.from_uci(move)
         node = node.add_main_variation(uci_move)
     
-    file_location = f"{bot1_location} vs {bot2_location} round {round}"
+    file_location = f"{bot1_location.split('/')[-1].split('\\')[-1]} vs {bot2_location.split('/')[-1].split('\\')[-1]} round {round}"
 
     # Export the game to a PGN file
     with open(f"{file_location}.pgn", "w") as pgn_file:
