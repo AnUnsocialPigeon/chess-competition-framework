@@ -35,16 +35,18 @@ def playGame():
 
 def playTurn(chess_state: chess.Board, bot_location: str):
     """Play a single turn of chess. Returns 0 for continue, 1 for white won, 2 for black won, 3 for draw"""
-    outcome = runBot(chess_state.fen(), bot_location)
+    outcome = runBot(chess_state.fen(), bot_location).strip()
 
     if outcome == failureString:
+        print("Failed.")
         return 2
-    move = checkMoveValidity(chess_state.fen(), outcome)
     
+    move = checkMoveValidity(chess_state.fen(), outcome)
     if move == "": 
+        print("Invalid move.")
         return 2
+    
     chess_state.push(move)
-
     return gameState(chess_state)
 
 
@@ -63,8 +65,8 @@ def gameState(chess_state: chess.Board):
     elif chess_state.is_insufficient_material():
         print("Draw (Insufficient Material)")
         return 3
-    elif chess_state.is_seventyfive_moves():
-        print("Draw (75-move rule)")
+    elif chess_state.is_fifty_moves():
+        print("Draw (50-move rule)")
         return 3
     elif chess_state.is_fivefold_repetition():
         print("Draw (Fivefold Repetition)")
@@ -111,11 +113,14 @@ def checkMoveValidity(initial_fen: str, next_fen: str):
     hypothetical_chess = chess.Board(initial_fen)
     legal_moves = list(hypothetical_chess.legal_moves)
 
+    # Sanitise
+    next_fen = next_fen.strip()
+
     for move in legal_moves:
         future_board = hypothetical_chess.copy()
         future_board.push(move)
 
-        if future_board.fen() == next_fen:
+        if future_board.fen().strip() == next_fen:
             return move
     
     return ""
@@ -125,3 +130,4 @@ def checkMoveValidity(initial_fen: str, next_fen: str):
 
 if __name__ == "__main__":
     winner = playGame()
+    print(f"Outcome: {winner}")
