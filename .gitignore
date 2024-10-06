@@ -2,4 +2,5 @@ venv/
 .git/
 
 *.pgn
+*.log
 

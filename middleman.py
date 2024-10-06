@@ -16,6 +16,7 @@ bot2_location = sys.argv[2]
 failureString = "Lost"
 chess_state = chess.Board()
 move_log = []
+fen_log = [chess_state.fen()]
 
 if not (os.path.isfile(bot1_location) and os.path.isfile(bot2_location)):
     print("Invalid bot location.")
@@ -51,6 +52,7 @@ def playTurn(chess_state: chess.Board, bot_location: str):
     # Play the move - must be logged
     move_log.append(move.uci())
     chess_state.push(move)
+    fen_log.append(chess_state.fen())
 
 
     return gameState(chess_state)
@@ -132,7 +134,7 @@ def checkMoveValidity(initial_fen: str, next_fen: str):
     return ""
 
 
-def saveGameToPGN(round: int):
+def saveGame(round: int):
     """Save the game log to a PGN file"""
     game = chess.pgn.Game()
 
@@ -151,17 +153,21 @@ def saveGameToPGN(round: int):
         uci_move = chess.Move.from_uci(move)
         node = node.add_main_variation(uci_move)
     
-    file_location = f"{bot1_location} vs {bot2_location}.pgn"
+    file_location = f"{bot1_location} vs {bot2_location} round {round}"
 
     # Export the game to a PGN file
-    with open(file_location, "w") as pgn_file:
+    with open(f"{file_location}.pgn", "w") as pgn_file:
         print(game, file=pgn_file)
+
+    # Export fen to a log file
+    with open(f"{file_location}.log", "w") as log_file:
+        for fen in fen_log:
+            print(fen, file=log_file)
 
     print(f"Game saved to {file_location}")
 
 
 if __name__ == "__main__":
     winner = playGame()
-    print(f"Outcome: {winner}")
-    saveGameToPGN(1)
+    saveGame(1)
 
