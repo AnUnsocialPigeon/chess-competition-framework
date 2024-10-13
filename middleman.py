@@ -92,14 +92,16 @@ def gameState(chess_state: chess.Board):
 
 def runBot(game_state: str, bot_file: str):
     """Runs a single round between 2 bots"""
-    print(f"Running {bot_file.split('/')[-1]} with {game_state}")
-    
+    bot_file = bot_file.split('/')[-1]
+    print(f"Running {bot_file} with {game_state}")
+
     bot = subprocess.Popen(
         ["python3", bot_file],
         stdin=subprocess.PIPE,                
         stdout=subprocess.PIPE,               
         stderr=subprocess.PIPE,               
-        text=True                             
+        text=True,                 
+        cwd="./bots"
     )
     
     try:
